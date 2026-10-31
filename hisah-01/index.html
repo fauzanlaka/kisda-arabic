@@ -43,6 +43,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .opt:disabled { cursor: default; }
 .timer { height: 8px; border-radius: 99px; background: var(--board); overflow: hidden; }
 .timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--coral), var(--saffron)); transform-origin: right; }
+.timer.hurry i { background: var(--coral); animation: hurry .5s ease-in-out infinite alternate; }
+@keyframes hurry { to { opacity: .45; } }
+.snd { cursor: pointer; color: var(--chalk); display: inline-flex; align-items: center; padding: 6px 10px; }
+.snd svg { width: 20px; height: 20px; }
+.snd[aria-pressed="false"] { color: var(--chalk-dim); }
 .feedback { min-height: 2.2em; font-size: 21px; line-height: 1.8; }
 .feedback.ok { color: var(--mint); } .feedback.bad { color: var(--coral); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
@@ -93,6 +98,7 @@ input[type=text] { font: inherit; font-size: 22px; width: 100%; padding: 8px 12p
     <div class="hud">
       <span class="pill">النِّقَاطُ <b id="score">٠</b></span>
       <span class="pill">التَّتَابُعُ <b id="streak">٠</b></span>
+      <button class="pill snd" id="snd" type="button" aria-pressed="true" aria-label="الصَّوْتُ"></button>
     </div>
   </header>
   <main id="stage"></main>
@@ -142,6 +148,61 @@ const ROUNDS = [
   { name: 'رَتِّبِ الجُمْلَةَ', desc: 'الْمِسِ الكَلِمَاتِ بِالتَّرْتِيبِ الصَّحِيحِ.', n: 5 } ];
 const TIME = 20;
 
+// Countdown sounds (Web Audio, no files): a soft tick each second, sharper rising ticks in the last 5 seconds, a low buzz at time-up.
+const SND = { ctx: null, on: true };
+try { SND.on = localStorage.getItem('snd') !== 'off'; } catch (e) {}
+function audioReady() {
+  if (!SND.ctx) { try { SND.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+  if (SND.ctx.state === 'suspended') SND.ctx.resume();
+  return SND.ctx;
+}
+function beep(freq, dur, vol, type = 'sine', delay = 0) {
+  if (!SND.on) return;
+  const ctx = audioReady(); if (!ctx) return;
+  const t = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
+}
+const tick = sec => sec <= 5 ? beep(660 + (5 - sec) * 110, 0.09, 0.2, 'square') : beep(1250, 0.03, 0.06);
+const buzz = () => beep(140, 0.5, 0.22, 'sawtooth');
+const melody = (notes, step, dur, vol, type = 'triangle') => notes.forEach((f, i) => beep(f, dur, vol, type, i * step));
+// Button and result sounds, each matched to what the action means.
+const FX = {
+  nav: () => beep(520, 0.05, 0.1, 'triangle'),                         // table, back, home, verb picker
+  next: () => melody([600, 900], 0.06, 0.07, 0.12),                    // next question
+  start: () => melody([523, 659, 784, 1047], 0.09, 0.12, 0.15),        // start / play again
+  ok: () => melody([784, 1175], 0.09, 0.18, 0.18, 'sine'),             // correct answer
+  bad: () => melody([220, 165], 0.12, 0.22, 0.16, 'square'),           // wrong answer
+  bonus: () => melody([1319, 1568, 2093], 0.07, 0.1, 0.12, 'sine'),    // streak bonus
+  tile: () => beep(1400, 0.04, 0.12, 'triangle'),                      // word tile placed
+  untile: () => beep(900, 0.04, 0.1, 'triangle'),                      // word tile taken back
+  win: s => s >= 2 ? melody([523, 659, 784, 1047, 1319], 0.11, 0.18, 0.16) : melody([523, 659, 784], 0.13, 0.2, 0.14),
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || b.disabled || b.id === 'snd' || b.classList.contains('opt')) return;  // answers sound in judge()
+  if (b.classList.contains('tile')) return (b.closest('#ans') ? FX.untile : FX.tile)();
+  if (b.id === 'go' || b.id === 'again') return FX.start();
+  if (b.id === 'nx') return FX.next();
+  FX.nav();
+}, true);
+const ICON_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const ICON_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function soundButton() {
+  const b = document.getElementById('snd');
+  b.innerHTML = SND.on ? ICON_ON : ICON_OFF;
+  b.setAttribute('aria-pressed', String(SND.on));
+  b.title = SND.on ? 'إِيقَافُ الصَّوْتِ' : 'تَشْغِيلُ الصَّوْتِ';
+}
+document.getElementById('snd').onclick = () => {
+  SND.on = !SND.on;
+  try { localStorage.setItem('snd', SND.on ? 'on' : 'off'); } catch (e) {}
+  if (SND.on) beep(880, 0.08, 0.15);
+  soundButton();
+};
+soundButton();
+
 let S;
 const stage = document.getElementById('stage');
 const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstElementChild; };
@@ -170,6 +231,7 @@ function buildQuestions() {
 }
 
 function start() {
+  audioReady();
   S = { qs: buildQuestions(), i: 0, score: 0, streak: 0, best: 0, right: 0, log: [], name: (document.getElementById('nm') || {}).value || '' };
   hud(); next();
 }
@@ -230,15 +292,24 @@ function next() {
     card.querySelectorAll('.opt').forEach(b => b.onclick = () => answer(b.dataset.id));
     t0 = Date.now();
     const bar = card.querySelector('#bar');
-    timerId = setInterval(() => { const left = Math.max(0, 1 - (Date.now() - t0) / (TIME * 1000)); bar.style.transform = `scaleX(${left})`; if (!left) answer(null); }, 100);
+    let lastSec = TIME;
+    timerId = setInterval(() => {
+      const left = Math.max(0, 1 - (Date.now() - t0) / (TIME * 1000)), sec = Math.ceil(left * TIME);
+      bar.style.transform = `scaleX(${left})`;
+      bar.parentElement.classList.toggle('hurry', sec <= 5);
+      if (sec < lastSec && sec > 0) { lastSec = sec; tick(sec); }
+      if (!left) { buzz(); answer(null); }
+    }, 100);
   } else orderSetup(q, card);
 }
 
-function judge(ok, fixHtml, pts) {
+function judge(ok, fixHtml, pts, timedOut = false) {
   clearInterval(timerId);
+  document.querySelector('.timer')?.classList.remove('hurry');
   S.log[S.i] = ok;
   if (ok) { S.streak++; S.right++; S.best = Math.max(S.best, S.streak); S.score += pts + (S.streak >= 3 ? 20 : 0); }
   else { S.streak = 0; S.miss = (S.miss || []); S.miss.push(fixHtml); }
+  if (ok) { FX.ok(); if (S.streak >= 3) setTimeout(FX.bonus, 260); } else if (!timedOut) FX.bad();
   hud();
   const fb = document.getElementById('fb');
   fb.className = 'feedback ' + (ok ? 'ok' : 'bad');
@@ -252,7 +323,7 @@ function answer(id) {
   const secs = (Date.now() - t0) / 1000;
   document.querySelectorAll('.opt').forEach(b => { b.disabled = true; if (b.dataset.id === q.ans) b.classList.add('ok'); else if (b.dataset.id === id) b.classList.add('bad'); });
   const ok = id === q.ans;
-  judge(ok, id === null ? 'انْتَهَى الوَقْتُ. ' + q.fix : q.fix, 100 + Math.round(50 * Math.max(0, 1 - secs / TIME)));
+  judge(ok, id === null ? 'انْتَهَى الوَقْتُ. ' + q.fix : q.fix, 100 + Math.round(50 * Math.max(0, 1 - secs / TIME)), id === null);
 }
 
 function orderSetup(q, card) {
@@ -274,6 +345,7 @@ function orderSetup(q, card) {
 function finish() {
   const total = S.qs.length, pct = S.right / total;
   const stars = pct >= .9 ? 3 : pct >= .7 ? 2 : pct >= .4 ? 1 : 0;
+  FX.win(stars);
   const msg = ['رَاجِعِ الجَدْوَلَ ثُمَّ حَاوِلْ مَرَّةً أُخْرَى.', 'بِدَايَةٌ طَيِّبَةٌ، وَاصِلِ التَّدْرِيبَ.', 'جَيِّدٌ جِدًّا!', 'مُمْتَازٌ! أَنْتَ بَطَلُ التَّصْرِيفِ.'][stars];
   stage.replaceChildren($(`<section class="card enter">
     <div class="eyebrow">النَّتِيجَةُ${S.name ? ' • ' + S.name.replace(/[<>&]/g, '') : ''}</div>
