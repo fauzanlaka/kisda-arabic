@@ -1,0 +1,1 @@
+window.READY = [1];
