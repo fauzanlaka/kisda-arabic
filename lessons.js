@@ -1,1 +1,1 @@
-window.READY = [1];
+window.READY = [1, 2];
