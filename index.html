@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>أَلْعَابُ اللُّغَةِ العَرَبِيَّةِ الاتِّصَالِيَّةِ • KISDA</title>
-<meta name="description" content="ألعاب مراجعة لمادة اللغة العربية الاتصالية – حصة بعد حصة. إعداد الأستاذ أشعري، KISDA.">
+<meta name="description" content="خرائط ذهنية وألعاب مراجعة لمادة اللغة العربية الاتصالية – حصة بعد حصة. إعداد الأستاذ أشعري، KISDA.">
 <link rel="icon" href="assets/kisda.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@500;700&display=swap">
@@ -27,15 +27,18 @@ header p { margin: 2px 0 0; color: var(--chalk-dim); font-size: 19px; }
 .intro { font-size: clamp(19px, 4.4vw, 23px); line-height: 1.9; margin: 22px 0 18px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; list-style: none; padding: 0; margin: 0; }
 .lesson { display: flex; gap: 14px; align-items: flex-start; height: 100%; padding: 16px; border-radius: 16px; background: var(--board-2);
-  border: 1px solid var(--line); color: inherit; text-decoration: none; transition: transform .12s, border-color .12s; }
-a.lesson:hover { transform: translateY(-2px); border-color: var(--saffron); }
-a.lesson:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; }
+  border: 1px solid var(--line); color: inherit; transition: border-color .12s; }
+.lesson.on:hover { border-color: var(--saffron); }
 .n { font-family: var(--display); width: 46px; height: 46px; flex: none; border-radius: 50%; display: grid; place-items: center;
   background: var(--saffron); color: #1b1608; font-size: 22px; font-weight: 700; }
 .lesson h2 { margin: 0; font-family: var(--display); font-size: 20px; line-height: 1.5; }
 .lesson p { margin: 4px 0 0; color: var(--chalk-dim); font-size: 18px; line-height: 1.7; }
-.tag { display: inline-block; margin-top: 8px; font-family: var(--display); font-size: 15px; border-radius: 999px; padding: 3px 12px; }
-a.lesson .tag { background: var(--mint); color: #10251f; font-weight: 700; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.tag { display: inline-block; font-family: var(--display); font-size: 15px; border-radius: 999px; padding: 3px 12px; text-decoration: none; transition: transform .12s; }
+a.tag { background: var(--mint); color: #10251f; font-weight: 700; }
+a.tag.map { background: var(--saffron); color: #1b1608; }
+a.tag:hover { transform: translateY(-2px); }
+a.tag:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; }
 .soon { opacity: .55; }
 .soon .n { background: var(--line); color: var(--chalk); }
 .soon .tag { border: 1px solid var(--line); color: var(--chalk-dim); }
@@ -56,7 +59,7 @@ footer span { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system
       <p>الفَصْلُ الدِّرَاسِيُّ الثَّانِي • ثَلَاثَ عَشْرَةَ حِصَّةً</p>
     </div>
   </header>
-  <p class="intro">اخْتَرْ حِصَّتَكَ، وَرَاجِعْ قَاعِدَتَهَا بِلُعْبَةٍ قَصِيرَةٍ بَعْدَ الدَّرْسِ.</p>
+  <p class="intro">اخْتَرْ حِصَّتَكَ، وَرَاجِعْ دَرْسَهَا بِالخَرِيطَةِ الذِّهْنِيَّةِ، ثُمَّ الْعَبْ لُعْبَتَهَا القَصِيرَةَ.</p>
   <ul class="grid" id="lessons"></ul>
   <footer>
     <img class="ph" src="assets/ustaz.png" alt="الأُسْتَاذُ أَشْعَرِي">
@@ -64,9 +67,9 @@ footer span { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system
     <img src="assets/kisda.png" alt="KISDA">
   </footer>
 </div>
-<script src="lessons.js?v=1-2-3"></script>
+<script src="lessons.js?v=1-2-3_1-2-3"></script>
 <script>
-// Lesson list (topic, grammar point); lessons.js lists which ones have a game folder.
+// Lesson list (topic, grammar point); lessons.js lists which lessons have a game (READY) and a mind map (MAPS).
 const LESSONS = [
   ['التَّعَارُفُ فِي الحَرَمِ الجَامِعِيِّ', 'تَصْرِيفُ الفِعْلِ المَاضِي مَعَ جَمِيعِ الضَّمَائِرِ'],
   ['يَوْمِي فِي الجَامِعَةِ', 'الفِعْلُ المُضَارِعُ + السَّاعَةُ'],
@@ -83,12 +86,13 @@ const LESSONS = [
   ['المَشْرُوعُ النِّهَائِيُّ', 'مُرَاجَعَةٌ شَامِلَةٌ'],
 ];
 const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-const ready = new Set(window.READY || []);
+const ready = new Set(window.READY || []), maps = new Set(window.MAPS || []);
 document.getElementById('lessons').innerHTML = LESSONS.map(([topic, rule], i) => {
-  const n = i + 1, slug = 'hisah-' + String(n).padStart(2, '0') + '/';
-  const inner = `<span class="n">${AR(n)}</span><div><h2>${topic}</h2><p>${rule}</p>` +
-    `<span class="tag">${ready.has(n) ? 'الْعَبِ الآنَ ←' : 'قَرِيبًا'}</span></div>`;
-  return ready.has(n) ? `<li><a class="lesson" href="${slug}">${inner}</a></li>` : `<li><div class="lesson soon" aria-disabled="true">${inner}</div></li>`;
+  const n = i + 1, slug = 'hisah-' + String(n).padStart(2, '0') + '/', on = ready.has(n) || maps.has(n);
+  const links = (maps.has(n) ? `<a class="tag map" href="${slug}kharitah/">الخَرِيطَةُ الذِّهْنِيَّةُ</a>` : '') +
+    (ready.has(n) ? `<a class="tag" href="${slug}">الْعَبِ الآنَ ←</a>` : '') + (on ? '' : '<span class="tag">قَرِيبًا</span>');
+  return `<li><div class="lesson${on ? ' on' : ' soon'}"><span class="n">${AR(n)}</span>` +
+    `<div><h2>${topic}</h2><p>${rule}</p><div class="links">${links}</div></div></div></li>`;
 }).join('');
 </script>
 </body>
