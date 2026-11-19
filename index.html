@@ -37,6 +37,7 @@ header p { margin: 2px 0 0; color: var(--chalk-dim); font-size: 19px; }
 .tag { display: inline-block; font-family: var(--display); font-size: 15px; border-radius: 999px; padding: 3px 12px; text-decoration: none; transition: transform .12s; }
 a.tag { background: var(--mint); color: #10251f; font-weight: 700; }
 a.tag.map { background: var(--saffron); color: #1b1608; }
+a.tag.vid { background: var(--chalk); color: #10251f; }
 a.tag:hover { transform: translateY(-2px); }
 a.tag:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; }
 .soon { opacity: .55; }
@@ -59,7 +60,7 @@ footer span { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system
       <p>الفَصْلُ الدِّرَاسِيُّ الثَّانِي • ثَلَاثَ عَشْرَةَ حِصَّةً</p>
     </div>
   </header>
-  <p class="intro">اخْتَرْ حِصَّتَكَ، وَرَاجِعْ دَرْسَهَا بِالخَرِيطَةِ الذِّهْنِيَّةِ، ثُمَّ الْعَبْ لُعْبَتَهَا القَصِيرَةَ.</p>
+  <p class="intro">اخْتَرْ حِصَّتَكَ، وَرَاجِعْ دَرْسَهَا بِالخَرِيطَةِ الذِّهْنِيَّةِ وَفِيدْيُو المُرَاجَعَةِ، ثُمَّ الْعَبْ لُعْبَتَهَا القَصِيرَةَ.</p>
   <ul class="grid" id="lessons"></ul>
   <footer>
     <img class="ph" src="assets/ustaz.png" alt="الأُسْتَاذُ أَشْعَرِي">
@@ -67,9 +68,9 @@ footer span { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system
     <img src="assets/kisda.png" alt="KISDA">
   </footer>
 </div>
-<script src="lessons.js?v=1-2-3-4_1-2-3-4"></script>
+<script src="lessons.js?v=1-2-3-4_1-2-3-4_v3"></script>
 <script>
-// Lesson list (topic, grammar point); lessons.js lists which lessons have a game (READY) and a mind map (MAPS).
+// Lesson list (topic, grammar point); lessons.js lists which lessons have a game (READY), a mind map (MAPS) and a review video (VIDEOS).
 const LESSONS = [
   ['التَّعَارُفُ فِي الحَرَمِ الجَامِعِيِّ', 'تَصْرِيفُ الفِعْلِ المَاضِي مَعَ جَمِيعِ الضَّمَائِرِ'],
   ['يَوْمِي فِي الجَامِعَةِ', 'الفِعْلُ المُضَارِعُ + السَّاعَةُ'],
@@ -86,10 +87,11 @@ const LESSONS = [
   ['المَشْرُوعُ النِّهَائِيُّ', 'مُرَاجَعَةٌ شَامِلَةٌ'],
 ];
 const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-const ready = new Set(window.READY || []), maps = new Set(window.MAPS || []);
+const ready = new Set(window.READY || []), maps = new Set(window.MAPS || []), vids = new Set(window.VIDEOS || []);
 document.getElementById('lessons').innerHTML = LESSONS.map(([topic, rule], i) => {
-  const n = i + 1, slug = 'hisah-' + String(n).padStart(2, '0') + '/', on = ready.has(n) || maps.has(n);
-  const links = (maps.has(n) ? `<a class="tag map" href="${slug}kharitah/">الخَرِيطَةُ الذِّهْنِيَّةُ</a>` : '') +
+  const n = i + 1, slug = 'hisah-' + String(n).padStart(2, '0') + '/', on = ready.has(n) || maps.has(n) || vids.has(n);
+  const links = (vids.has(n) ? `<a class="tag vid" href="${slug}muraja3ah/">▶ فِيدْيُو المُرَاجَعَةِ</a>` : '') +
+    (maps.has(n) ? `<a class="tag map" href="${slug}kharitah/">الخَرِيطَةُ الذِّهْنِيَّةُ</a>` : '') +
     (ready.has(n) ? `<a class="tag" href="${slug}">الْعَبِ الآنَ ←</a>` : '') + (on ? '' : '<span class="tag">قَرِيبًا</span>');
   return `<li><div class="lesson${on ? ' on' : ' soon'}"><span class="n">${AR(n)}</span>` +
     `<div><h2>${topic}</h2><p>${rule}</p><div class="links">${links}</div></div></div></li>`;
