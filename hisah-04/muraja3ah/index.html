@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فِيدْيُو المُرَاجَعَةِ • الحِصَّةُ ٤ • KISDA</title>
+<meta name="description" content="فيديو مراجعة من داخل الفصل – فِي مَقْصِفِ الجَامِعَةِ. إعداد الأستاذ أشعري، KISDA.">
+<link rel="icon" href="../../assets/kisda.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+:root { --board: #17302b; --board-2: #1f3d37; --chalk: #f3efe4; --chalk-dim: #b9c4bd; --saffron: #f2b544; --mint: #6fd3a8; --line: #2f564e;
+  --display: "Reem Kufi", "Noto Kufi Arabic", "Geeza Pro", sans-serif; --text: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--board); color: var(--chalk); font-family: var(--text);
+  background-image: radial-gradient(circle at 20% 0%, #224740 0, transparent 55%), radial-gradient(circle at 90% 100%, #10251f 0, transparent 60%); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+nav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+nav a { font-family: var(--display); color: var(--mint); text-decoration: none; font-size: 16px; }
+h1 { margin: 14px 0 2px; font-family: var(--display); color: var(--saffron); font-size: clamp(24px, 5.5vw, 36px); line-height: 1.35; }
+.sub { margin: 0 0 14px; color: var(--chalk-dim); font-size: 19px; }
+.player { position: relative; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--line); aspect-ratio: 16 / 9; }
+video { display: block; width: 100%; height: 100%; background: #000; }
+.now { display: flex; align-items: center; gap: 10px; margin: 12px 2px 4px; font-family: var(--display); font-size: 18px; }
+.now .n, .ch .n { width: 34px; height: 34px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--saffron); color: #1b1608; font-weight: 700; font-size: 17px; }
+ol { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.ch { width: 100%; display: flex; gap: 12px; align-items: center; text-align: right; padding: 8px; border-radius: 14px; background: var(--board-2);
+  border: 1px solid var(--line); color: inherit; font: inherit; cursor: pointer; transition: border-color .12s, transform .12s; }
+.ch:hover { border-color: var(--saffron); transform: translateY(-2px); }
+.ch:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; }
+.ch[aria-current="true"] { border-color: var(--mint); background: #24463f; }
+.ch img { width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; flex: none; background: #0d2142; }
+.ch b { display: block; font-family: var(--display); font-size: 17px; line-height: 1.45; }
+.ch span.ms { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system-ui, sans-serif; direction: ltr; text-align: right; }
+.ch span.t { display: block; color: var(--mint); font: 600 13px/1.4 system-ui, sans-serif; direction: ltr; text-align: right; margin-top: 2px; }
+.ch .txt { min-width: 0; flex: 1; }
+footer { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line); }
+footer img { width: 56px; height: 56px; border-radius: 50%; } footer .ph { border: 2px solid var(--saffron); }
+footer b { display: block; font-family: var(--display); color: var(--saffron); font-size: 18px; }
+footer span { display: block; color: var(--chalk-dim); font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: .04em; direction: ltr; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a href="../../">→ جَمِيعُ الحِصَصِ</a><span style="display:flex;gap:18px;flex-wrap:wrap"><a href="../">لُعْبَةُ الحِصَّةِ ←</a><a href="../kharitah/">الخَرِيطَةُ الذِّهْنِيَّةُ ←</a></span></nav>
+  <h1>فِيدْيُو المُرَاجَعَةِ: فِي مَقْصِفِ الجَامِعَةِ</h1>
+  <p class="sub">تَسْجِيلُ الحِصَّةِ ٤ مِنْ دَاخِلِ الفَصْلِ • عَدَدُ الأَجْزَاءِ: ١١ • المُدَّةُ: ٤٥:٥٧</p>
+  <div class="player"><video id="v" controls playsinline preload="metadata"></video></div>
+  <div class="now" id="now"></div>
+  <ol id="list"></ol>
+  <footer>
+    <img class="ph" src="../../assets/ustaz.png" alt="الأُسْتَاذُ أَشْعَرِي">
+    <div><b>إِعْدَادُ: الأُسْتَاذُ أَشْعَرِي</b><span>Ustaz Asyari  •  KISDA</span></div>
+    <img src="../../assets/kisda.png" alt="KISDA">
+  </footer>
+</div>
+<script>
+const CH = [{"f": "01", "ar": "التَّمْهِيدُ", "ms": "Pembukaan: mengira pen dan bertanya harga", "d": 147.9}, {"f": "02", "ar": "العَدَدُ وَالمَعْدُودُ", "ms": "Bilangan dan yang dibilang: sepadan dan berlawanan", "d": 206.7}, {"f": "03", "ar": "العِبْرَةُ بِالمُفْرَدِ", "ms": "Lihat bentuk mufrad, dan bertanya harga", "d": 272.1}, {"f": "04", "ar": "المُفْرَدَاتُ", "ms": "Kosa kata kantin: dari video pelajaran", "d": 184.5}, {"f": "05", "ar": "الطَّلَبُ وَالسُّؤَالُ عَنِ السِّعْرِ", "ms": "Meminta makanan dan bertanya harga", "d": 227.7}, {"f": "06", "ar": "الحِوَارُ", "ms": "Dialog: «Bikam ṭabaq al-aruzz?»", "d": 375.6}, {"f": "07", "ar": "نَصُّ القِرَاءَةِ", "ms": "Teks bacaan: kantin universiti kami", "d": 275.5}, {"f": "08", "ar": "القَاعِدَةُ", "ms": "Tatabahasa dalam video: bilangan 1–10", "d": 209.5}, {"f": "09", "ar": "تَحَدٍّ سَرِيعٌ", "ms": "Cabaran pantas: bagaimana kita sebut?", "d": 183.8}, {"f": "10", "ar": "التَّدْرِيبَاتُ", "ms": "Latihan dalam lembaran pelajar", "d": 321.7}, {"f": "11", "ar": "اللُّعْبَةُ الرَّقْمِيَّةُ", "ms": "Permainan digital «Bikam hādhā?»", "d": 352.2}];
+const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const mmss = s => Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0');
+const v = document.getElementById('v'), list = document.getElementById('list'), now = document.getElementById('now');
+list.innerHTML = CH.map((c, i) => `<li><button class="ch" data-i="${i}"><img src="${c.f}.jpg" alt="" loading="lazy">` +
+  `<span class="txt"><b>${AR(i + 1)}. ${c.ar}</b><span class="ms">${c.ms}</span><span class="t">${mmss(c.d)}</span></span></button></li>`).join('');
+let cur = -1;
+function load(i, play) {
+  cur = i; v.src = CH[i].f + '.mp4'; v.poster = CH[i].f + '.jpg';
+  now.innerHTML = `<span class="n">${AR(i + 1)}</span><span>${CH[i].ar}</span>`;
+  list.querySelectorAll('.ch').forEach((b, k) => b.setAttribute('aria-current', k === i));
+  history.replaceState(null, '', '#' + (i + 1));
+  if (play) v.play().catch(() => {});
+}
+list.addEventListener('click', e => { const b = e.target.closest('.ch'); if (b) { load(+b.dataset.i, true); v.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
+v.addEventListener('ended', () => { if (cur < CH.length - 1) load(cur + 1, true); });
+const h = parseInt(location.hash.slice(1), 10);
+load(h >= 1 && h <= CH.length ? h - 1 : 0, false);
+</script>
+</body>
+</html>
